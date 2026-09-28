@@ -1,26 +1,481 @@
 @import "tailwindcss";
 
+/* Design system — see CLAUDE.md. Colors and fonts live here only. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #ebe5d8;
+  --ink: #16130f;
+  --ink-soft: #3d3831;
+  --muted: #5c554b;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-hanken);
+  --font-urdu: var(--font-nastaliq);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-hanken), system-ui, sans-serif;
+  font-size: 14px;
+  overflow-x: hidden; /* deploy safety: never allow horizontal scroll on mobile */
+}
+
+/*
+ * Link hover effect (same everywhere): no underline by default; on hover and
+ * keyboard focus a 1.5px ink line draws in from the left via background-size.
+ */
+.ink-link {
+  color: var(--ink);
+  text-decoration: none;
+  background-image: linear-gradient(var(--ink), var(--ink));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 1.5px;
+  transition: background-size 0.35s ease;
+}
+
+.ink-link:hover,
+.ink-link:focus-visible {
+  background-size: 100% 1.5px;
+}
+
+/* Secondary (muted) links — socials, meta. Same effect, muted color. */
+.ink-link-muted {
+  color: var(--muted);
+  background-image: linear-gradient(var(--muted), var(--muted));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ink-link {
+    transition: none;
+  }
+}
+
+/* ---- Homepage layout ---- */
+/*
+ * Desktop base matches reference/home.html at 1440x900. Horizontal padding and
+ * the name scale down with clamp() for 1024-1439. Below 1024 it collapses to a
+ * single stacked column with the panels as a full-width banner.
+ */
+.home {
+  --pad-x: clamp(56px, 8.333vw, 120px);
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+.ink-panels {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.ink-panels-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.home-nav,
+.home-hero,
+.home-social {
+  position: absolute;
+  z-index: 10;
+}
+
+.home-nav {
+  left: var(--pad-x);
+  top: 42px;
+  display: flex;
+  gap: 30px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.home-hero {
+  left: var(--pad-x);
+  top: clamp(160px, 27.8vh, 250px);
+  width: min(600px, calc(100vw - var(--pad-x) - 40px));
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.home-hero h1 {
+  margin: 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 600;
+  /* min kept phone-safe so "abdullah" never overflows narrow viewports; the vw
+     term drives 1024-1440 and resolves to 132px at 1440 (matches the reference). */
+  font-size: clamp(52px, 9.17vw, 132px);
+  line-height: 0.84;
+  letter-spacing: -0.03em;
+}
+
+.home-ur {
+  align-self: flex-start;
+  font-family: var(--font-urdu), serif;
+  font-size: 28px;
+  line-height: 2.1;
+  color: var(--ink-soft);
+}
+
+.home-hero p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  max-width: 440px;
+}
+
+.home-social {
+  left: var(--pad-x);
+  bottom: 46px;
+  display: flex;
+  gap: 24px;
+}
+
+@media (max-width: 1023.98px) {
+  .home {
+    --pad-x: clamp(20px, 6vw, 56px);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    overflow: visible;
+    padding: 40px var(--pad-x) 56px;
+  }
+
+  .home-nav,
+  .home-hero,
+  .home-social,
+  .ink-panels {
+    position: static;
+    inset: auto;
+  }
+
+  .home-nav {
+    flex-wrap: wrap;
+    gap: 20px 24px;
+  }
+
+  .home-hero {
+    width: 100%;
+  }
+
+  .ink-panels {
+    width: 100%;
+    height: 45vh;
+  }
+}
+
+/* ---- Inner pages ---- */
+/* Same paper, ink, and fonts. Single left-aligned column, max-width 720px, the
+   same nav at the top, a Cormorant title, and one hand-inked rule beneath it. */
+.page {
+  --inner-pad: clamp(20px, 6vw, 56px);
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 40px var(--inner-pad) 96px;
+}
+
+.page-nav {
+  max-width: 720px;
+  margin: 0 auto 72px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 30px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.page-main {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.page-title {
+  margin: 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(44px, 8vw, 64px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.ink-rule {
+  display: block;
+  margin: 16px 0 44px;
+  overflow: visible;
+}
+
+/* work timeline */
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.timeline-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.timeline-role {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.timeline-period {
+  font-size: 14px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* On phones, stack role over period consistently instead of an uneven
+   space-between wrap. */
+@media (max-width: 640px) {
+  .timeline-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+}
+
+.timeline-company {
+  margin: 4px 0 0;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+
+.timeline-summary {
+  margin: 10px 0 0;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  max-width: 60ch;
+}
+
+/* projects list */
+.card-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.card-summary {
+  margin: 8px 0 0;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  max-width: 60ch;
+}
+
+.card-tech {
+  margin: 8px 0 0;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+/* project detail */
+.project-meta {
+  margin: 0 0 4px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.project-link {
+  margin: 0 0 32px;
+  font-size: 15px;
+}
+
+/* MDX prose */
+.prose {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.prose h2 {
+  margin: 40px 0 12px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.prose h3 {
+  margin: 28px 0 10px;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.prose p {
+  margin: 0 0 16px;
+}
+
+.prose ul,
+.prose ol {
+  margin: 0 0 16px;
+  padding-left: 22px;
+}
+
+.prose li {
+  margin: 4px 0;
+}
+
+.prose a {
+  color: var(--ink);
+  text-decoration: none;
+  background-image: linear-gradient(var(--ink), var(--ink));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1.5px;
+}
+
+.prose code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+}
+
+/* writing */
+.post-date {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.post-tags {
+  margin: 6px 0 0;
+}
+
+article.prose {
+  margin-top: 28px;
+}
+
+.draft-tag {
+  color: var(--muted);
+}
+
+.empty {
+  font-size: 15px;
+  color: var(--muted);
+}
+
+/* quotes — English and Urdu side by side */
+.quote-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.quote {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.quote-ur {
+  margin: 0;
+  order: 2;
+  text-align: right;
+  font-family: var(--font-urdu), serif;
+  font-size: 22px;
+  line-height: 2.2;
+  color: var(--ink);
+}
+
+.quote-en {
+  order: 1;
+}
+
+.quote-en p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.quote-line {
+  display: block;
+}
+
+.quote-author {
+  margin-top: 12px !important;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .quote {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .quote-ur {
+    order: 1;
+  }
+
+  .quote-en {
+    order: 2;
+  }
+}
+
+/* contact */
+.contact-lead {
+  margin: 0 0 24px;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.contact-email {
+  margin: 0 0 32px;
+  font-size: 19px;
+}
+
+.contact-socials {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  font-size: 16px;
 }
