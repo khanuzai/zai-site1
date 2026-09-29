@@ -8,9 +8,20 @@ const links = [
   { href: "/contact", label: "contact" },
 ];
 
-export default function Nav({ className = "" }: { className?: string }) {
+export default function Nav({
+  className = "",
+  home = false,
+}: {
+  className?: string;
+  home?: boolean;
+}) {
   return (
     <nav className={className} aria-label="Primary">
+      {home ? (
+        <Link className="ink-link nav-home" href="/">
+          zai
+        </Link>
+      ) : null}
       {links.map((l) => (
         <Link key={l.href} className="ink-link" href={l.href}>
           {l.label}

@@ -14,7 +14,7 @@ export default function PageShell({
 }) {
   return (
     <div className="page">
-      <Nav className="page-nav" />
+      <Nav className="page-nav" home />
       <main className="page-main">
         <h1 className="page-title">{title}</h1>
         <InkRule />

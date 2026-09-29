@@ -5,8 +5,8 @@ export type Social = {
 
 // TODO: real profile URLs and contact email.
 export const socials: Social[] = [
-  { label: "github", href: "#" },
-  { label: "linkedin", href: "#" },
-  { label: "x", href: "#" },
-  { label: "email", href: "mailto:hello@abdullahkhan.dev" },
+  { label: "github", href: "https://github.com/khanuzai" },
+  { label: "linkedin", href: "https://www.linkedin.com/in/khanzai" },
+  { label: "x", href: "https://x.com/kh4nzai" },
+  { label: "email", href: "mailto:abdullah.khan1@uwaterloo.ca" },
 ];

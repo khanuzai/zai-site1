@@ -199,10 +199,16 @@ body {
   margin: 0 auto 72px;
   display: flex;
   flex-wrap: wrap;
+  align-items: baseline;
   gap: 20px 30px;
   font-size: 16px;
   font-weight: 500;
   letter-spacing: 0.01em;
+}
+
+/* home link sits at the left, set apart from the section links */
+.nav-home {
+  margin-right: auto;
 }
 
 .page-main {
@@ -243,11 +249,21 @@ body {
   gap: 8px 16px;
 }
 
-.timeline-role {
+/* company name — the main heading of each entry */
+.timeline-company {
   margin: 0;
   font-size: 19px;
   font-weight: 500;
   color: var(--ink);
+  text-transform: lowercase;
+}
+
+/* role · location — muted subline under the company */
+.timeline-role {
+  margin: 4px 0 0;
+  font-size: 15px;
+  color: var(--muted);
+  text-transform: lowercase;
 }
 
 .timeline-period {
@@ -266,18 +282,18 @@ body {
   }
 }
 
-.timeline-company {
-  margin: 4px 0 0;
-  font-size: 15px;
-  color: var(--ink-soft);
-}
-
 .timeline-summary {
   margin: 10px 0 0;
   font-size: 15px;
   line-height: 1.65;
   color: var(--ink-soft);
   max-width: 60ch;
+}
+
+/* highlighted phrase inside a description (**...** in content) */
+.timeline-hl {
+  color: var(--ink);
+  font-weight: 500;
 }
 
 /* projects list */
