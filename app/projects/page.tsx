@@ -20,7 +20,6 @@ export default function ProjectsPage() {
               </Link>
             </h2>
             <p className="card-summary">{p.summary}</p>
-            {p.tech ? <p className="card-tech">{p.tech.join(" · ")}</p> : null}
           </li>
         ))}
       </ul>

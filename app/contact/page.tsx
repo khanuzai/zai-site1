@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import PageShell from "@/components/PageShell";
+import StatsEasterEgg from "@/components/StatsEasterEgg";
 import { socials } from "@/content/socials";
 
 export const metadata: Metadata = {
@@ -41,6 +42,8 @@ export default function ContactPage() {
       </ul>
 
       {/* TODO: simple contact form wired to Resend (later, per CLAUDE.md). */}
+
+      <StatsEasterEgg />
     </PageShell>
   );
 }

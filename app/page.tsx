@@ -21,6 +21,14 @@ export default function Home() {
           <br />
           cs at uwaterloo, bba at laurier.
         </p>
+        <a
+          className="ink-link home-resume"
+          href="/abdullah-khan-resume.pdf"
+          target="_blank"
+          rel="noopener"
+        >
+          resume ↓
+        </a>
       </div>
 
       {/* Manga panels canvas — sits behind the content on desktop, becomes a

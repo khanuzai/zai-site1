@@ -1,35 +1,32 @@
 ---
-title: BookPulse
-summary: Real-time book price intelligence.
-tech:
-  - AWS
-  - TypeScript
-date: "2025-05-01" # TODO: real date
+title: bookpulse
+summary: real-time price and rarity tracking for 100+ books, fed by an hourly aws pipeline.
+order: 1
+stack:
+  - react
+  - typescript
+  - fastapi
+  - postgresql
+  - docker
+  - aws lambda
+  - s3
+  - rds
+  - eventbridge
+links:
+  - label: live
+    href: https://bookpulse2.vercel.app/
+  - label: github
+    href: https://github.com/khanuzai/bookpulse2
 ---
 
-## What it is
+## what it is
 
-Real-time book price intelligence — it tracks book prices as they change and
-surfaces the signal, running on AWS.
+tracks prices for 100+ books and scores each one on rarity and demand across 5 categories. the dashboard shows price charts, the biggest movers, and a rarity leaderboard.
 
-## Why
+## why i built it
 
-TODO: why you built BookPulse.
+i built this while applying for a role on amazon books, so i went all in on the aws stack they were hiring for.
 
-## How it works
+## how it works
 
-TODO: the data pipeline, which AWS services it uses, and how prices are
-collected and served.
-
-## What broke
-
-TODO: what went wrong and how you fixed it.
-
-## What was learned
-
-TODO: what you took away from building it.
-
-## Links
-
-- TODO: live link
-- TODO: source code
+every hour, eventbridge triggers a lambda that pulls fresh book data, saves the raw data to s3, and computes price changes, demand, and rarity. results land in postgres on rds. a fastapi backend in docker serves them to a react + typescript frontend on vercel.

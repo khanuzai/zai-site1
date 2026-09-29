@@ -29,6 +29,8 @@ Links: no underline by default; on hover and keyboard focus, a 1.5px ink line dr
 
 Do not add: cursors, loading screens, page transitions, grain overlays, scroll-reveal animations, gradients, shadows, rounded cards, or new colors.
 
+Exception to "no loading screens": there is one intentional intro screen (`components/IntroOverlay.tsx`), a full-screen paper overlay shown once per tab session (via `sessionStorage`) the moment someone first opens the site. It's a real full-screen button (works with click/tap/any key, keyboard and screen readers), fades out over 400ms (skipped under `prefers-reduced-motion`), and the real page still renders underneath in the SSR HTML so nothing is hidden from search engines. This is the only permitted loading/gate screen.
+
 ## Homepage (`/`)
 
 Copy the layout and behavior from `reference/home.html`:

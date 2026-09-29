@@ -1,33 +1,31 @@
 ---
-title: ASGS
-summary: Attack surface risk modeling.
-tech:
-  - TODO
-date: "2025-09-01" # TODO: real date
+title: asgs
+summary: models how a system's attack surface grows, and finds where added complexity starts getting dangerous.
+order: 2
+stack:
+  - python
+  - fastapi
+  - pydantic
+  - numpy
+  - sqlalchemy
+  - sqlite
+  - react
+  - recharts
+links:
+  - label: live
+    href: https://asgs.vercel.app/
+  - label: github
+    href: https://github.com/khanuzai/asgs
 ---
 
-## What it is
+## what it is
 
-ASGS models attack surface risk. TODO: expand on what ASGS stands for and what
-it does.
+describe a system (endpoints, users, mfa adoption, known vulnerabilities) and it scores the attack surface from 0 to 100 across 5 threat categories, ranking what's driving the risk. move the sliders and the risk curves update live.
 
-## Why
+## why i built it
 
-TODO: why you built ASGS.
+i was deep into cybersecurity at the time, and i wanted to take something i'd actually learned in calculus and use it on a real problem.
 
-## How it works
+## how it works
 
-TODO: how the risk model is built and scored.
-
-## What broke
-
-TODO: what went wrong and how you fixed it.
-
-## What was learned
-
-TODO: what you took away from building it.
-
-## Links
-
-- TODO: live link
-- TODO: source code
+the backend models risk with quadratic functions, then uses derivatives to find the growth zones, the points where adding complexity makes exposure grow faster than the system itself. scenarios save to sqlite so you can compare setups side by side.

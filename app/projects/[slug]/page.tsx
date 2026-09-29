@@ -33,21 +33,36 @@ export default async function ProjectPage(
   return (
     <PageShell title={meta.title}>
       <p className="project-meta">{meta.summary}</p>
-      {meta.link ? (
-        <p className="project-link">
-          <a
-            className="ink-link"
-            href={meta.link}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {meta.link.replace(/^https?:\/\//, "")}
-          </a>
-        </p>
-      ) : null}
       <article className="prose">
         <MDXRemote source={content} />
       </article>
+
+      <div className="project-foot">
+        <h2 className="project-foot-h">stack</h2>
+        <p className="project-foot-p">{meta.stack.join(", ")}</p>
+
+        <h2 className="project-foot-h">links</h2>
+        <ul className="project-foot-links">
+          {meta.links.map((l) => (
+            <li key={l.label}>
+              {l.href.startsWith("TODO") ? (
+                <span className="project-foot-todo">
+                  {l.label} — {l.href}
+                </span>
+              ) : (
+                <a
+                  className="ink-link"
+                  href={l.href}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {l.label}
+                </a>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
     </PageShell>
   );
 }

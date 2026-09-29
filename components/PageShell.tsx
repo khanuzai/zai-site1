@@ -8,12 +8,14 @@ import InkRule from "@/components/InkRule";
 export default function PageShell({
   title,
   children,
+  wide = false,
 }: {
   title: string;
   children: ReactNode;
+  wide?: boolean; // widen the column (nav, title, rule, body) to the 1040px grid
 }) {
   return (
-    <div className="page">
+    <div className={`page${wide ? " page--wide" : ""}`}>
       <Nav className="page-nav" home />
       <main className="page-main">
         <h1 className="page-title">{title}</h1>

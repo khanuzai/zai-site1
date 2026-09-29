@@ -5,6 +5,11 @@ import {
   Noto_Nastaliq_Urdu,
 } from "next/font/google";
 import "./globals.css";
+import IntroOverlay from "@/components/IntroOverlay";
+
+// Runs before paint: if the intro was already dismissed this session, mark the
+// document so CSS hides the overlay immediately (no flash on page navigation).
+const introInit = `try{if(sessionStorage.getItem('intro-seen'))document.documentElement.setAttribute('data-intro','seen')}catch(e){}`;
 
 // Cormorant Garamond 600 — the name and page titles only.
 const cormorant = Cormorant_Garamond({
@@ -42,7 +47,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${cormorant.variable} ${hanken.variable} ${nastaliq.variable} h-full`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <script dangerouslySetInnerHTML={{ __html: introInit }} />
+        {children}
+        <IntroOverlay />
+      </body>
     </html>
   );
 }

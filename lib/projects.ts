@@ -4,12 +4,14 @@ import matter from "gray-matter";
 
 const DIR = path.join(process.cwd(), "content", "projects");
 
+export type ProjectLink = { label: string; href: string };
+
 export type ProjectFrontmatter = {
   title: string;
   summary: string;
-  tech?: string[];
-  link?: string;
-  date: string; // ISO date, used for ordering (newest first)
+  order: number; // controls listing order (ascending)
+  stack: string[];
+  links: ProjectLink[];
 };
 
 export type ProjectMeta = ProjectFrontmatter & { slug: string };
@@ -28,7 +30,7 @@ export function getAllProjects(): ProjectMeta[] {
       const { data } = matter(raw);
       return { slug, ...(data as ProjectFrontmatter) };
     })
-    .sort((a, b) => (a.date < b.date ? 1 : -1));
+    .sort((a, b) => a.order - b.order);
 }
 
 export function getProject(
