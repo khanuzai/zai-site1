@@ -8,10 +8,15 @@ import { useEffect, useRef } from "react";
  * soft ink washes, and 9 pixel bats that flock and scatter from the cursor.
  *
  * The art is authored in a fixed 1440x900 coordinate space (ported from
- * reference/home.html) and then presented responsively:
- *   - desktop (>= 1024px): the whole scene fills the viewport, panels on the right.
- *   - below 1024px: only the panels are framed as a full-width banner.
- * Plain Canvas 2D, no libraries. Honors prefers-reduced-motion.
+ * reference/home.html) and always drawn uniformly scaled to fit its container
+ * (like object-fit: contain) — never stretched, never cropped:
+ *   - desktop (>= 1024px): the whole 1440x900 frame is contained, so the panels
+ *     keep the reference's position and paper margins on all sides.
+ *   - below 1024px: only the panel area (800,40 -> 1400,860) is contained inside
+ *     a container that already holds that aspect ratio, so it fits exactly.
+ * The backing store is sized to the display size x devicePixelRatio so the
+ * hatching stays crisp on high-DPI screens. Plain Canvas 2D, no libraries.
+ * Honors prefers-reduced-motion.
  */
 export default function InkPanels() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -33,8 +38,18 @@ export default function InkPanels() {
       GAP = 8;
     const moon = { x: 1170, y: 190, r: 86 };
     const slant = (x: number) => 540 - (x - X0) * (110 / (X1 - X0));
-    // panels bounding box, used to frame the banner on small screens
-    const PB = { x: 780, y: 30, w: 660, h: 840 };
+
+    // Source rectangles in art space, chosen by mode and always "contained".
+    // FULL: the whole reference frame (desktop). PANEL: just the two panels
+    // (800,40 -> 1400,860) for the small-screen banner.
+    const FULL = { x: 0, y: 0, w: W, h: H };
+    const PANEL = { x: X0, y: Y0, w: X1 - X0, h: Y1 - Y0 };
+    // Bats stay inside the panel area plus a small margin so they never fly over
+    // the text column or the nav.
+    const BX0 = 780,
+      BX1 = 1420,
+      BY0 = 30,
+      BY1 = 870;
 
     const mk = () => {
       const c = document.createElement("canvas");
@@ -215,17 +230,13 @@ export default function InkPanels() {
       ty = 0;
 
     const computeTransform = () => {
-      if (mode === "full") {
-        const s = Math.max(boxW / W, boxH / H);
-        sx = sy = s;
-        tx = (boxW - W * s) / 2;
-        ty = (boxH - H * s) / 2;
-      } else {
-        const s = Math.max(boxW / PB.w, boxH / PB.h);
-        sx = sy = s;
-        tx = boxW - (PB.x + PB.w) * s; // anchor panels to the right edge
-        ty = boxH / 2 - (PB.y + PB.h / 2) * s; // center vertically
-      }
+      const src = mode === "full" ? FULL : PANEL;
+      // Uniform "contain" scale — fit the source rect fully, never crop/stretch.
+      const s = Math.min(boxW / src.w, boxH / src.h);
+      sx = sy = s;
+      // Center the source rect within the box.
+      tx = (boxW - src.w * s) / 2 - src.x * s;
+      ty = (boxH - src.h * s) / 2 - src.y * s;
     };
 
     const draw = () => {
@@ -322,9 +333,13 @@ export default function InkPanels() {
             b.vy += (dy / d) * k;
           }
         }
-        if (b.y < 80) b.vy += 0.06;
-        if (b.y > 780) b.vy -= 0.08;
-        if (b.x < 760) b.vx += 0.03;
+        // Smoothly steer back inward as a bat approaches the boundary.
+        const M = 60;
+        if (b.x < BX0 + M) b.vx += 0.14 * (1 - (b.x - BX0) / M);
+        else if (b.x > BX1 - M) b.vx -= 0.14 * (1 - (BX1 - b.x) / M);
+        if (b.y < BY0 + M) b.vy += 0.14 * (1 - (b.y - BY0) / M);
+        else if (b.y > BY1 - M) b.vy -= 0.14 * (1 - (BY1 - b.y) / M);
+
         const sp = Math.hypot(b.vx, b.vy);
         if (sp > 2.8) {
           b.vx *= 2.8 / sp;
@@ -336,9 +351,21 @@ export default function InkPanels() {
         }
         b.x += b.vx;
         b.y += b.vy;
-        if (b.x > 1480) {
-          b.x = 1440;
-          b.vx = -Math.abs(b.vx);
+
+        // Hard clamp + reflect so a bat can never leave the panel area.
+        if (b.x < BX0) {
+          b.x = BX0;
+          if (b.vx < 0) b.vx = -b.vx;
+        } else if (b.x > BX1) {
+          b.x = BX1;
+          if (b.vx > 0) b.vx = -b.vx;
+        }
+        if (b.y < BY0) {
+          b.y = BY0;
+          if (b.vy < 0) b.vy = -b.vy;
+        } else if (b.y > BY1) {
+          b.y = BY1;
+          if (b.vy > 0) b.vy = -b.vy;
         }
       }
     };

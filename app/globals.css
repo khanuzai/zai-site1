@@ -172,9 +172,15 @@ body {
     width: 100%;
   }
 
+  /* Panel-only banner: keep the exact panel aspect ratio (600:820), cap at
+     70vh, center it, and never let it exceed the paper-padded column width.
+     The height is capped so the derived width also fits the column. */
   .ink-panels {
-    width: 100%;
-    height: 45vh;
+    align-self: center;
+    aspect-ratio: 600 / 820;
+    width: auto;
+    height: min(70vh, calc((100vw - 2 * var(--pad-x)) * 820 / 600));
+    max-width: 100%;
   }
 }
 
