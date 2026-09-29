@@ -342,8 +342,12 @@ export default function InkPanels() {
 
         const sp = Math.hypot(b.vx, b.vy);
         if (sp > 2.8) {
-          b.vx *= 2.8 / sp;
-          b.vy *= 2.8 / sp;
+          // Ease bursts (e.g. the moon-click scatter) back to cruising speed
+          // instead of hard-clamping, so the push reads as a strong scatter
+          // that settles before the flock pulls the bats back together.
+          const target = Math.max(2.8, sp * 0.9);
+          b.vx *= target / sp;
+          b.vy *= target / sp;
         }
         if (sp < 1 && sp > 0) {
           b.vx /= sp;
@@ -386,14 +390,37 @@ export default function InkPanels() {
       draw();
     };
 
+    const inMoon = (ax: number, ay: number) =>
+      Math.hypot(ax - moon.x, ay - moon.y) <= moon.r;
+
     const onMove = (e: MouseEvent) => {
       const r = canvas.getBoundingClientRect();
       mx = (e.clientX - r.left - tx) / sx;
       my = (e.clientY - r.top - ty) / sy;
+      // pointer cursor only while hovering the moon
+      canvas.style.cursor = inMoon(mx, my) ? "pointer" : "default";
     };
     const onLeave = () => {
       mx = null;
       my = null;
+      canvas.style.cursor = "default";
+    };
+
+    // Clicking inside the moon blasts every bat away from its center; the normal
+    // flocking then pulls them back together.
+    const onClick = (e: MouseEvent) => {
+      const r = canvas.getBoundingClientRect();
+      const ax = (e.clientX - r.left - tx) / sx;
+      const ay = (e.clientY - r.top - ty) / sy;
+      if (!inMoon(ax, ay)) return;
+      for (const b of bats) {
+        const dx = b.x - moon.x,
+          dy = b.y - moon.y;
+        const dist = Math.hypot(dx, dy) || 1;
+        const speed = 11;
+        b.vx = (dx / dist) * speed;
+        b.vy = (dy / dist) * speed;
+      }
     };
 
     const onFullChange = (e: MediaQueryListEvent) => {
@@ -409,6 +436,7 @@ export default function InkPanels() {
     ro.observe(host);
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseout", onLeave);
+    canvas.addEventListener("click", onClick);
     mqFull.addEventListener("change", onFullChange);
     mqBats.addEventListener("change", onBatsChange);
 
@@ -428,6 +456,7 @@ export default function InkPanels() {
       ro.disconnect();
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseout", onLeave);
+      canvas.removeEventListener("click", onClick);
       mqFull.removeEventListener("change", onFullChange);
       mqBats.removeEventListener("change", onBatsChange);
     };

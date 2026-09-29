@@ -1,13 +1,30 @@
-// A thin, hand-inked horizontal rule. The wobble is generated from a fixed seed
-// so it is deterministic — the same line every render, "generated once", with no
-// client-side JavaScript. Stretches to the width of its container.
+"use client";
+
+import { useMemo } from "react";
+import { usePathname } from "next/navigation";
+
+// A thin, hand-inked horizontal rule under page titles. The stroke, thickness,
+// and style are identical everywhere, but each route gets its own wobble: the
+// hills come from a seeded PRNG keyed to the current pathname, so a given page
+// always draws the same line while different pages differ. On load it draws
+// itself left-to-right via stroke-dashoffset (see .ink-rule in globals.css,
+// which also skips the animation under prefers-reduced-motion).
 
 const W = 720;
 const H = 12;
 
-function makePath(): string {
-  // small seeded PRNG for a stable wobble
-  let seed = 20260927;
+// FNV-1a hash → a stable 32-bit seed from the route string.
+function hashSeed(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function makePath(seed0: number): string {
+  let seed = seed0 & 0x7fffffff;
   const rnd = () => {
     seed = (seed * 1103515245 + 12345) & 0x7fffffff;
     return seed / 0x7fffffff;
@@ -29,9 +46,9 @@ function makePath(): string {
   return d;
 }
 
-const path = makePath();
-
 export default function InkRule() {
+  const pathname = usePathname();
+  const d = useMemo(() => makePath(hashSeed(pathname || "/")), [pathname]);
   return (
     <svg
       className="ink-rule"
@@ -42,8 +59,13 @@ export default function InkRule() {
       aria-hidden="true"
       role="presentation"
     >
+      {/* pathLength normalizes the length to 1 so the draw animation in CSS can
+          use dasharray/dashoffset of 1 without measuring the real length. The
+          pathname key remounts the path on route change so the draw replays. */}
       <path
-        d={path}
+        key={pathname}
+        d={d}
+        pathLength={1}
         fill="none"
         stroke="var(--ink)"
         strokeWidth={1.6}
