@@ -99,6 +99,20 @@ fallback, whose profile to read). The page revalidates once a day.
 - `note` — optional. Small muted line shown under the title.
 - `cover` — optional. A manual image URL that overrides the auto lookup.
 - `type` — anime section only: `"anime"` (default) or `"manga"`.
+- `featured` — optional. Set `featured: true` to pull an item to the front of
+  its section's preview on /shelf (see `previewCount` below).
+
+## previews and full pages
+
+`/shelf` only shows a preview of each section. Each section shows up to
+`previewCount` items (default 5): any you marked `featured: true` come first (in
+file order), then the rest in file order. If a section has more items than
+`previewCount`, a small "view all →" link appears under it.
+
+Every section also has its own full page at `/shelf/<section>` (e.g.
+`/shelf/movies`, `/shelf/anime`) listing every item, with the year and note under
+each cover. You don't create these — they're generated automatically from the
+sections in `sectionOrder`.
 
 ## the settings block
 
@@ -110,6 +124,8 @@ At the top of `content/shelf.ts`:
   match the site.
 - **`coversPerRow`** — how many covers per row on desktop. (Tablet is always 3,
   mobile always 2.)
+- **`previewCount`** — how many items each section shows on /shelf before a
+  "view all →" link to its full page.
 - **`grayscale`** — `true` shows covers in grayscale that fade to color on
   hover; `false` shows them in full color always.
 - **`maxPlaylists`** — the most playlists to show.

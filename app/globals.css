@@ -520,6 +520,21 @@ article.prose {
   color: var(--muted);
 }
 
+/* "view all →" under a section, and "← shelf" back link on a section page */
+.shelf-viewall {
+  display: block;
+  width: fit-content;
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.shelf-back {
+  display: block;
+  width: fit-content;
+  margin: 0 0 28px;
+  font-size: 15px;
+}
+
 /* cover grid: coversPerRow on desktop (via --cols), 3 tablet, 2 mobile */
 .shelf-grid {
   display: grid;

@@ -19,6 +19,8 @@ export type ShelfItem = {
   cover?: string;
   // anime section only — "anime" (default) or "manga". ignored elsewhere.
   type?: ShelfKind;
+  // optional — show this one first in the section's preview on /shelf.
+  featured?: boolean;
 };
 
 // The sections that can appear on the page.
@@ -41,6 +43,10 @@ export const settings = {
 
   // How many covers per row on desktop. (Tablet is always 3, mobile always 2.)
   coversPerRow: 5,
+
+  // How many items each section shows on /shelf before a "view all →" link.
+  // Featured items (featured: true) come first, then the rest in file order.
+  previewCount: 5,
 
   // Covers in grayscale that fade to full color on hover/focus?
   // true = grayscale, false = always full color.
@@ -100,14 +106,14 @@ export const books: ShelfItem[] = [
 export const movies: ShelfItem[] = [
   // EXAMPLE — copy a line like this to add your own:
   //   { title: "blade runner 2049", year: 2017, note: "favorite" },
-  { title: "deliver us from evil", year: 2014 },
-  { title: "the dark knight", year: 2008 },
-  { title: "moneyball", year: 2011 },
+  { title: "deliver us from evil", year: 2014, featured: true },
+  { title: "the dark knight", year: 2008, featured: true },
+  { title: "moneyball", year: 2011, featured: true },
   { title: "21", year: 2008 },
   { title: "limitless", year: 2011 },
   { title: "the wolf of wall street", year: 2013 },
-  { title: "the social network", year: 2010 },
-  { title: "interstellar", year: 2014 },
+  { title: "the social network", year: 2010, featured: true },
+  { title: "interstellar", year: 2014, featured: true },
   { title: "project hail mary", year: 2026 },
   { title: "obsession", year: 2025 },
 ];
