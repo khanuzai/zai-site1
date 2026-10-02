@@ -1,6 +1,17 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import {
+  PAPER,
+  offscreen,
+  makeNoise,
+  paintPaper,
+  hatchStroke,
+  fadeInk,
+  inkBorder,
+  strokeEdges,
+  drawBat,
+} from "@/lib/ink";
 
 /**
  * The homepage canvas: two manga panels split by a slanted gutter, hand-inked
@@ -15,8 +26,8 @@ import { useEffect, useRef } from "react";
  *   - below 1024px: only the panel area (800,40 -> 1400,860) is contained inside
  *     a container that already holds that aspect ratio, so it fits exactly.
  * The backing store is sized to the display size x devicePixelRatio so the
- * hatching stays crisp on high-DPI screens. Plain Canvas 2D, no libraries.
- * Honors prefers-reduced-motion.
+ * hatching stays crisp on high-DPI screens. Shared drawing primitives live in
+ * lib/ink.ts. Honors prefers-reduced-motion.
  */
 export default function InkPanels() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -40,8 +51,6 @@ export default function InkPanels() {
     const slant = (x: number) => 540 - (x - X0) * (110 / (X1 - X0));
 
     // Source rectangles in art space, chosen by mode and always "contained".
-    // FULL: the whole reference frame (desktop). PANEL: just the two panels
-    // (800,40 -> 1400,860) for the small-screen banner.
     const FULL = { x: 0, y: 0, w: W, h: H };
     const PANEL = { x: X0, y: Y0, w: X1 - X0, h: Y1 - Y0 };
     // Bats stay inside the panel area plus a small margin so they never fly over
@@ -51,46 +60,13 @@ export default function InkPanels() {
       BY0 = 30,
       BY1 = 870;
 
-    const mk = () => {
-      const c = document.createElement("canvas");
-      c.width = W;
-      c.height = H;
-      return c;
-    };
-
-    // value noise
-    const NN = 256,
-      tbl = new Float32Array(NN * NN);
-    for (let i = 0; i < NN * NN; i++) tbl[i] = Math.random();
-    const noise = (x: number, y: number) => {
-      const xi = Math.floor(x),
-        yi = Math.floor(y),
-        xf = x - xi,
-        yf = y - yi;
-      const u = xf * xf * (3 - 2 * xf),
-        v = yf * yf * (3 - 2 * yf),
-        g = (a: number, b: number) => tbl[(a & 255) * NN + (b & 255)];
-      const a = g(xi, yi),
-        b = g(xi + 1, yi),
-        c = g(xi, yi + 1),
-        d = g(xi + 1, yi + 1);
-      return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
-    };
+    const noise = makeNoise();
     let t = 0;
 
-    // paper grain
-    const paper = mk(),
-      p = paper.getContext("2d")!;
-    p.fillStyle = "#ebe5d8";
-    p.fillRect(0, 0, W, H);
-    for (let i = 0; i < 9000; i++) {
-      p.fillStyle =
-        Math.random() < 0.5 ? "rgba(90,78,60,0.05)" : "rgba(255,255,255,0.25)";
-      p.fillRect(Math.random() * W, Math.random() * H, 1 + Math.random() * 2, 1);
-    }
+    const paper = paintPaper(W, H);
 
     // soft ink washes (inside panels only)
-    const wash = mk(),
+    const wash = offscreen(W, H),
       w = wash.getContext("2d")!;
     (
       [
@@ -107,7 +83,7 @@ export default function InkPanels() {
     });
 
     // crosshatch layer
-    const ink = mk(),
+    const ink = offscreen(W, H),
       o = ink.getContext("2d")!;
     const density = (x: number, y: number) => {
       const n = noise(x * 0.005 + t * 0.002, y * 0.005) - 0.5;
@@ -122,32 +98,12 @@ export default function InkPanels() {
     };
     const stroke = () => {
       const x = X0 + Math.random() * (X1 - X0),
-        y = Y0 + Math.random() * (Y1 - Y0),
-        d = density(x, y);
-      if (Math.random() > d) return;
-      const layer = d > 0.8 ? 2 : d > 0.45 ? 1 : 0;
-      const ang = [Math.PI / 4, -Math.PI / 4, 0.1][
-        Math.floor(Math.random() * (layer + 1))
-      ];
-      const len = 12 + Math.random() * 40 * (0.5 + d),
-        dx = Math.cos(ang) * len / 2,
-        dy = Math.sin(ang) * len / 2;
-      o.strokeStyle = `rgba(22,19,15,${(0.5 + Math.random() * 0.45).toFixed(2)})`;
-      o.lineWidth = 0.6 + Math.random() * 0.9;
-      o.lineCap = "round";
-      o.beginPath();
-      o.moveTo(x - dx, y - dy);
-      o.quadraticCurveTo(
-        x + (Math.random() - 0.5) * 3,
-        y + (Math.random() - 0.5) * 3,
-        x + dx,
-        y + dy
-      );
-      o.stroke();
+        y = Y0 + Math.random() * (Y1 - Y0);
+      hatchStroke(o, x, y, density(x, y));
     };
     for (let i = 0; i < 16000; i++) stroke();
 
-    // panels + hand-inked borders
+    // panels (clip path) + hand-inked borders
     const panelPath = (c: CanvasRenderingContext2D) => {
       c.beginPath();
       c.moveTo(X0, Y0);
@@ -161,7 +117,7 @@ export default function InkPanels() {
       c.lineTo(X0, Y1);
       c.closePath();
     };
-    const polys = [
+    const edges = inkBorder([
       [
         [X0, Y0],
         [X1, Y0],
@@ -174,30 +130,7 @@ export default function InkPanels() {
         [X1, Y1],
         [X0, Y1],
       ],
-    ];
-    const edges: { pts: number[][]; w: number }[] = [];
-    polys.forEach((pl) => {
-      for (let pass = 0; pass < 2; pass++) {
-        const pts: number[][] = [];
-        for (let i = 0; i < 4; i++) {
-          const [ax, ay] = pl[i],
-            [bx, by] = pl[(i + 1) % 4],
-            len = Math.hypot(bx - ax, by - ay),
-            n = Math.max(2, Math.floor(len / 14)),
-            nx = -(by - ay) / len,
-            ny = (bx - ax) / len;
-          for (let k = 0; k < n; k++) {
-            const tt = k / n,
-              j = (Math.random() - 0.5) * (pass ? 1.6 : 1.1);
-            pts.push([
-              ax + (bx - ax) * tt + nx * j,
-              ay + (by - ay) * tt + ny * j,
-            ]);
-          }
-        }
-        edges.push({ pts, w: pass ? 1.1 : 2.6 });
-      }
-    });
+    ]);
 
     // bats (boids)
     const bats: { x: number; y: number; vx: number; vy: number; ph: number }[] =
@@ -231,22 +164,18 @@ export default function InkPanels() {
 
     const computeTransform = () => {
       const src = mode === "full" ? FULL : PANEL;
-      // Uniform "contain" scale — fit the source rect fully, never crop/stretch.
       const s = Math.min(boxW / src.w, boxH / src.h);
       sx = sy = s;
-      // Center the source rect within the box.
       tx = (boxW - src.w * s) / 2 - src.x * s;
       ty = (boxH - src.h * s) / 2 - src.y * s;
     };
 
     const draw = () => {
-      // paper fills the whole visible surface first (covers areas outside the art)
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.imageSmoothingEnabled = true;
-      ctx.fillStyle = "#ebe5d8";
+      ctx.fillStyle = PAPER;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // switch into art space (with device-pixel scaling baked in)
       ctx.setTransform(dpr * sx, 0, 0, dpr * sy, dpr * tx, dpr * ty);
 
       ctx.drawImage(paper, 0, 0);
@@ -257,40 +186,16 @@ export default function InkPanels() {
       ctx.drawImage(ink, 0, 0);
       ctx.restore();
 
-      ctx.strokeStyle = "#16130f";
-      ctx.lineJoin = "round";
-      ctx.lineCap = "round";
-      edges.forEach((e) => {
-        ctx.lineWidth = e.w;
-        ctx.beginPath();
-        e.pts.forEach((pt, i) =>
-          i ? ctx.lineTo(pt[0], pt[1]) : ctx.moveTo(pt[0], pt[1])
-        );
-        ctx.closePath();
-        ctx.stroke();
-      });
+      strokeEdges(ctx, edges);
 
       if (showBats) {
-        const P = 4;
-        ctx.fillStyle = "#16130f";
-        bats.forEach((b) => {
-          const sh = Math.floor((t + b.ph) / 5) % 2 ? up : down;
-          const bx = Math.round(b.x / P) * P,
-            by = Math.round(b.y / P) * P;
-          sh.forEach((row, ry) => {
-            for (let rx = 0; rx < 7; rx++)
-              if (row[rx] === "X") ctx.fillRect(bx + rx * P, by + ry * P, P, P);
-          });
-        });
+        bats.forEach((b) => drawBat(ctx, b.x, b.y, Math.floor((t + b.ph) / 5)));
       }
     };
 
     const step = () => {
       for (let i = 0; i < 40; i++) stroke();
-      o.globalCompositeOperation = "destination-out";
-      o.fillStyle = "rgba(0,0,0,0.006)";
-      o.fillRect(0, 0, W, H);
-      o.globalCompositeOperation = "source-over";
+      fadeInk(o, W, H);
       if (!showBats) return;
       for (const b of bats) {
         let ax = 0,
@@ -342,9 +247,8 @@ export default function InkPanels() {
 
         const sp = Math.hypot(b.vx, b.vy);
         if (sp > 2.8) {
-          // Ease bursts (e.g. the moon-click scatter) back to cruising speed
-          // instead of hard-clamping, so the push reads as a strong scatter
-          // that settles before the flock pulls the bats back together.
+          // Ease bursts (the moon-click scatter) back to cruising speed instead
+          // of hard-clamping, so the push settles before the flock regroups.
           const target = Math.max(2.8, sp * 0.9);
           b.vx *= target / sp;
           b.vy *= target / sp;
@@ -374,9 +278,6 @@ export default function InkPanels() {
       }
     };
 
-    const up = ["X.....X", "XX.X.XX", ".XXXXX.", "...X..."];
-    const down = [".......", ".X.X.X.", "XXXXXXX", "X..X..X"];
-
     const resize = () => {
       const rect = host.getBoundingClientRect();
       boxW = rect.width;
@@ -397,7 +298,6 @@ export default function InkPanels() {
       const r = canvas.getBoundingClientRect();
       mx = (e.clientX - r.left - tx) / sx;
       my = (e.clientY - r.top - ty) / sy;
-      // pointer cursor only while hovering the moon
       canvas.style.cursor = inMoon(mx, my) ? "pointer" : "default";
     };
     const onLeave = () => {
@@ -406,8 +306,8 @@ export default function InkPanels() {
       canvas.style.cursor = "default";
     };
 
-    // Clicking inside the moon blasts every bat away from its center; the normal
-    // flocking then pulls them back together.
+    // Clicking inside the moon blasts every bat away from its center; flocking
+    // then pulls them back together.
     const onClick = (e: MouseEvent) => {
       const r = canvas.getBoundingClientRect();
       const ax = (e.clientX - r.left - tx) / sx;
@@ -417,9 +317,8 @@ export default function InkPanels() {
         const dx = b.x - moon.x,
           dy = b.y - moon.y;
         const dist = Math.hypot(dx, dy) || 1;
-        const speed = 11;
-        b.vx = (dx / dist) * speed;
-        b.vy = (dy / dist) * speed;
+        b.vx = (dx / dist) * 11;
+        b.vy = (dy / dist) * 11;
       }
     };
 

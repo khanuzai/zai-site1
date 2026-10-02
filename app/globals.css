@@ -664,3 +664,44 @@ article.prose {
   gap: 24px;
   font-size: 16px;
 }
+
+/* ---- 404 ---- */
+.nf {
+  --inner-pad: clamp(20px, 6vw, 56px);
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 40px var(--inner-pad) 96px;
+}
+
+.nf-main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-top: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* single panel ~360x460, scales down with paper margin on small screens */
+.nf-panel {
+  position: relative;
+  width: 360px;
+  max-width: 100%;
+  aspect-ratio: 360 / 460;
+}
+
+.nf-title {
+  margin: 36px 0 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(36px, 11vw, 48px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.nf-back {
+  margin-top: 16px;
+  font-size: 16px;
+}
