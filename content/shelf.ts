@@ -92,6 +92,10 @@ export const anime: ShelfItem[] = [
   { title: "vagabond", type: "manga" },
   { title: "tokyo ghoul" },
   { title: "solo leveling" },
+  { title: "baki" },
+  { title: "hellsing" },
+  { title: "bleach" },
+  { title: "kengan ashura" },
 ];
 
 // ── BOOKS (covers from Open Library) ─────────────────────────────────────────
