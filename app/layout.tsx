@@ -4,6 +4,7 @@ import {
   Hanken_Grotesk,
   Noto_Nastaliq_Urdu,
 } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 // Cormorant Garamond 600 — the name and page titles only.
@@ -42,7 +43,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${cormorant.variable} ${hanken.variable} ${nastaliq.variable} h-full`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
