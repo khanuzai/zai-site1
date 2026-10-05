@@ -12,7 +12,7 @@ export default function ContactPage() {
   return (
     <PageShell title="contact">
       <p className="contact-lead">
-        Reach me by email, or find me on the usual places.
+        reach me by email, or find me on the usual places.
       </p>
 
       {email ? (
