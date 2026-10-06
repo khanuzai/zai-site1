@@ -438,14 +438,42 @@ body {
   margin: 0 0 16px;
 }
 
+/* Tailwind's reset strips list markers, so draw our own: an en dash for bullets
+   and plain numbers for ordered lists, both muted, with a hanging indent so
+   wrapped lines align with the text rather than the marker. */
 .prose ul,
 .prose ol {
   margin: 0 0 16px;
-  padding-left: 22px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.prose ol {
+  counter-reset: prose-ol;
 }
 
 .prose li {
   margin: 4px 0;
+  padding-left: 1.5em;
+  position: relative;
+}
+
+.prose ul > li::before {
+  content: "–";
+  position: absolute;
+  left: 0;
+  color: var(--muted);
+}
+
+.prose ol > li {
+  counter-increment: prose-ol;
+}
+
+.prose ol > li::before {
+  content: counter(prose-ol) ".";
+  position: absolute;
+  left: 0;
+  color: var(--muted);
 }
 
 .prose a {
