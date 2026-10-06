@@ -96,7 +96,9 @@ export const anime: ShelfItem[] = [
   { title: "hellsing" },
   { title: "bleach" },
   { title: "kengan ashura" },
-  { title: "black clover"}
+  { title: "black clover"},
+  { title: "jujutsu kaisen"},
+  { title: "chainsaw man"}
 ];
 
 // ── BOOKS (covers from Open Library) ─────────────────────────────────────────
