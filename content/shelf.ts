@@ -31,7 +31,7 @@ export type SectionKey = "playlists" | "anime" | "books" | "movies";
 export const settings = {
   // The order sections appear on the page, top to bottom.
   // Delete a key from this list to hide that whole section.
-  sectionOrder: ["playlists", "anime", "books", "movies"] as SectionKey[],
+  sectionOrder: ["playlists", "anime", "books"] as SectionKey[],
 
   // The heading shown above each section (kept lowercase to match the site).
   headings: {
