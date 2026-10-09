@@ -1,5 +1,6 @@
 import InkPanels from "@/components/InkPanels";
 import Nav from "@/components/Nav";
+import BirthdayNote from "@/components/BirthdayNote";
 import { socials } from "@/content/socials";
 
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
           <br />
           cs at uwaterloo, bba at laurier.
         </p>
+        <BirthdayNote />
         <a
           className="ink-link home-resume"
           href="/abdullah-khan-resume.pdf"

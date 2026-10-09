@@ -6,6 +6,9 @@
   --ink: #16130f;
   --ink-soft: #3d3831;
   --muted: #5c554b;
+  /* one celebratory accent, a red-ink / hanko-stamp tone, used only for the
+     birthday line so it stands out from the ink/muted text around it */
+  --accent: #b23a2e;
 }
 
 @theme inline {
@@ -64,16 +67,23 @@ body {
  * the name scale down with clamp() for 1024-1439. Below 1024 it collapses to a
  * single stacked column with the panels as a full-width banner.
  */
+/* Left column is a flex column at least the full viewport tall: nav at top,
+   hero in the upper area, socials pushed to the bottom. If the window is too
+   short to fit everything, the page grows and scrolls (min-height, not height)
+   instead of the hero overlapping the socials. No absolutely positioned text. */
 .home {
   --pad-x: clamp(56px, 8.333vw, 120px);
-  position: relative;
   min-height: 100vh;
   min-height: 100svh;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 42px var(--pad-x) 46px;
 }
 
+/* panels stay fixed to the viewport on the right, so scrolling the (taller)
+   text column never resizes or moves them */
 .ink-panels {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
@@ -88,16 +98,15 @@ body {
   pointer-events: auto;
 }
 
+/* relative + z-index so the text sits above the fixed panels */
 .home-nav,
 .home-hero,
 .home-social {
-  position: absolute;
+  position: relative;
   z-index: 10;
 }
 
 .home-nav {
-  left: var(--pad-x);
-  top: 42px;
   display: flex;
   gap: 30px;
   font-size: 16px;
@@ -106,8 +115,10 @@ body {
 }
 
 .home-hero {
-  left: var(--pad-x);
-  top: clamp(160px, 27.8vh, 250px);
+  /* keeps the name in the same upper-third spot as the reference at 1440x900;
+     scales up gently and bottom margin guarantees >=40px above the socials */
+  margin-top: clamp(96px, 21vh, 188px);
+  margin-bottom: 40px;
   width: min(600px, calc(100vw - var(--pad-x) - 40px));
   display: flex;
   flex-direction: column;
@@ -141,6 +152,21 @@ body {
   max-width: 440px;
 }
 
+/* shown only on the birthday — accent color + underline so it stands out.
+   Scoped under .home-hero to beat the ".home-hero p" body-text rule. */
+.home-hero .home-birthday {
+  margin: 0;
+  max-width: none;
+  width: fit-content;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
 /* resume link under the two lines of text; underline spans only the text */
 .home-resume {
   align-self: flex-start;
@@ -150,8 +176,7 @@ body {
 }
 
 .home-social {
-  left: var(--pad-x);
-  bottom: 46px;
+  margin-top: auto; /* pushed to the bottom of the flex column */
   display: flex;
   gap: 24px;
 }
@@ -179,8 +204,14 @@ body {
     gap: 20px 24px;
   }
 
+  /* reset the desktop flex spacing; the stacked column uses the gap instead */
   .home-hero {
     width: 100%;
+    margin: 0;
+  }
+
+  .home-social {
+    margin-top: 0;
   }
 
   /* Panel-only banner: keep the exact panel aspect ratio (600:820), cap at
