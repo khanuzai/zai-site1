@@ -5,6 +5,7 @@ import {
   Noto_Nastaliq_Urdu,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 // Cormorant Garamond 600 — the name and page titles only.
@@ -32,6 +33,8 @@ const nastaliq = Noto_Nastaliq_Urdu({
 });
 
 export const metadata: Metadata = {
+  // base URL for resolving metadata/link-preview URLs (canonical, OG, etc.)
+  metadataBase: new URL(siteUrl),
   title: "abdullah khan",
   description:
     "builds things that feel like something. cs at uwaterloo, bba at laurier.",

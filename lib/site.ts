@@ -1,6 +1,6 @@
-// TODO: set the real production URL (or NEXT_PUBLIC_SITE_URL in the environment).
+// Production URL (override with NEXT_PUBLIC_SITE_URL in the environment).
 export const siteUrl = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://abdullahkhan.dev"
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://khanzai.ca"
 ).replace(/\/$/, "");
 
 export const siteName = "abdullah khan";
