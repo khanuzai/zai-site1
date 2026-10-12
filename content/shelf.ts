@@ -71,15 +71,19 @@ export const spotifyUrl =
 // public oEmbed). If this array is empty, the code will try the automatic list.
 // To add/remove a playlist, paste/delete its full URL below.
 export const playlists: string[] = [
+  "https://open.spotify.com/playlist/3ooE9IJX1dgF7w5wtcWyAf",
+  "https://open.spotify.com/playlist/5hHHIsJzjhmjoTzejJb0Q4",
+  "https://open.spotify.com/playlist/5r5huRHvKPTPQzDBCPJY8p",
+  "https://open.spotify.com/playlist/2cYPPBIMI67bCUwzAfpZIt",
   "https://open.spotify.com/playlist/0VFAfG6HqMsS2LPFuXw1As",
   "https://open.spotify.com/playlist/0qVA5bIuXeqcJLeTShe7Kb",
+  "https://open.spotify.com/playlist/30eQ4zmpy7so4dOOkfpGES",
   "https://open.spotify.com/playlist/15kwPs7JyGMiJlLkk6MsHm",
-  "https://open.spotify.com/playlist/2cYPPBIMI67bCUwzAfpZIt",
+  "https://open.spotify.com/playlist/7sSXl0L5XB2epN2g7mkUxM",
   "https://open.spotify.com/playlist/2mxzXUuqrZS5MCFwbzyRCR",
-  "https://open.spotify.com/playlist/3ooE9IJX1dgF7w5wtcWyAf",
   "https://open.spotify.com/playlist/4CDG4dLkZxECYBQgAgg7Rb",
+  "https://open.spotify.com/playlist/0wW3d8tF3dC7I9Im5jVaIE",
   "https://open.spotify.com/playlist/5MuYcUMCHfEtnpOAgAj1iM",
-  "https://open.spotify.com/playlist/5r5huRHvKPTPQzDBCPJY8p",
   "https://open.spotify.com/playlist/7MQXChykoCemlaiPwQppde",
 ];
 
