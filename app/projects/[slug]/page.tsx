@@ -33,6 +33,16 @@ export default async function ProjectPage(
   return (
     <PageShell title={meta.title}>
       <p className="project-meta">{meta.summary}</p>
+      {meta.stats && meta.stats.length > 0 ? (
+        <div className="project-stats">
+          {meta.stats.map((s, i) => (
+            <div className="project-stat" key={i}>
+              <div className="project-stat-num">{s.value}</div>
+              <div className="project-stat-label">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      ) : null}
       <article className="prose">
         <MDXRemote source={content} />
       </article>

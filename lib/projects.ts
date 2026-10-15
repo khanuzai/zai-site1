@@ -5,6 +5,7 @@ import matter from "gray-matter";
 const DIR = path.join(process.cwd(), "content", "projects");
 
 export type ProjectLink = { label: string; href: string };
+export type ProjectStat = { value: string; label: string };
 
 export type ProjectFrontmatter = {
   title: string;
@@ -12,6 +13,7 @@ export type ProjectFrontmatter = {
   order: number; // controls listing order (ascending)
   stack: string[];
   links: ProjectLink[];
+  stats?: ProjectStat[]; // optional headline numbers shown under the title
 };
 
 export type ProjectMeta = ProjectFrontmatter & { slug: string };

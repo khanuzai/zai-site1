@@ -1,0 +1,40 @@
+---
+title: bill extractor
+summary: an llm that reads utility bills, tested head to head against hand-written parsers.
+order: 0
+stats:
+  - value: "100%"
+    label: field accuracy
+  - value: "$0.0028"
+    label: per bill
+  - value: "2.45s"
+    label: per bill
+stack:
+  - python
+  - claude api
+  - pydantic
+  - pymupdf
+  - postgresql
+  - pgvector
+  - sentence-transformers
+  - sqlglot
+  - docker
+  - pytest
+links:
+  - label: live
+    href: TODO
+  - label: github
+    href: https://github.com/khanuzai/bill-extractor
+---
+
+## what it is
+
+turns utility bill pdfs into clean, validated data using claude, then lets you ask questions about your bills in plain english. on 100 bills it had never seen, it got all 1,000 fields right, at $0.0028 and 2.45 seconds per bill.
+
+## why i built it
+
+at leapap i wrote parsers that read billing data by hand. i wanted to know if an llm could replace them, and what it would actually cost in accuracy, speed, and money.
+
+## how it works
+
+i generated 200 fake bills across 5 different layouts, so every answer was known ahead of time. a regex parser built for 2 of the layouts scored 100% on those and under 9% on the other 3. the llm pipeline pulls each bill into a strict schema, checks the math (line items against the total, dates in range), and retries with feedback if anything's off. extracted bills go into postgres with pgvector, and questions get routed: totals and counts go to generated sql, everything else goes to vector search with page citations. the generated sql is locked down three ways, so it can only ever read. the two questions it got wrong ran without errors and returned the wrong number, which is the scariest kind of bug, so i documented it.
