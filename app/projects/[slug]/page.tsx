@@ -32,6 +32,7 @@ export default async function ProjectPage(
 
   return (
     <PageShell title={meta.title}>
+      {meta.status ? <p className="project-status">{meta.status}</p> : null}
       <p className="project-meta">{meta.summary}</p>
       {meta.stats && meta.stats.length > 0 ? (
         <div className="project-stats">

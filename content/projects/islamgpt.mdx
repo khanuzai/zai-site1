@@ -1,0 +1,27 @@
+---
+title: islamgpt
+summary: a local ai assistant that talks about everyday life through an islamic lens, and cites the qur'an when it matters.
+order: 0.5
+status: in progress
+stack:
+  - python
+  - llamaindex
+  - chromadb
+  - ollama
+  - qwen2.5
+links:
+  - label: github
+    href: https://github.com/khanuzai/islamgpt
+---
+
+## what it is
+
+a chat assistant built to feel like talking to a knowledgeable muslim friend, not a formal religious authority. ask about work, money, health, or relationships and you get normal, helpful answers with an islamic worldview built in. ask something genuinely religious and it answers from the actual qur'an, cited by surah and ayah, instead of making things up. it runs entirely on your own computer: no api keys, no cloud, nothing leaves your machine.
+
+## why i built it
+
+i kept getting into debates with my friends about what islam actually says on everything from money to relationships to everyday life. so instead of arguing from memory, i built something that answers from the source and cites everything it uses.
+
+## how it works
+
+every message gets routed first to decide if it needs scripture. religious questions trigger retrieval from a vector database of the qur'an, so answers are grounded in real verses. it's built to be firm on settled matters, lay out the different madhhab positions side by side where scholars genuinely differ, and point you to a qualified scholar for personal rulings. it runs locally through ollama with qwen2.5. right now it's qur'an-grounded; hadith is next.

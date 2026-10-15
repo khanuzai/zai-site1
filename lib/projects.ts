@@ -14,6 +14,7 @@ export type ProjectFrontmatter = {
   stack: string[];
   links: ProjectLink[];
   stats?: ProjectStat[]; // optional headline numbers shown under the title
+  status?: string; // optional small muted label under the title (e.g. "in progress")
 };
 
 export type ProjectMeta = ProjectFrontmatter & { slug: string };

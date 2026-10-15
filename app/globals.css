@@ -396,6 +396,12 @@ body {
 }
 
 /* project detail */
+.project-status {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
 .project-meta {
   margin: 0 0 4px;
   font-size: 17px;
