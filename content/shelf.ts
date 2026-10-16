@@ -111,6 +111,7 @@ export const books: ShelfItem[] = [
   // EXAMPLE — copy a line like this to add your own:
   //   { title: "the pragmatic programmer", year: 1999, note: "on the desk" },
   { title: "atomic habits", note: "currently reading" },
+  { title: "the four agreements", year: 1997, note: "next up" },
 ];
 
 // ── MOVIES (posters from TMDB — set TMDB_API_KEY to enable) ──────────────────
