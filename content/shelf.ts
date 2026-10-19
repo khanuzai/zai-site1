@@ -112,6 +112,12 @@ export const books: ShelfItem[] = [
   //   { title: "the pragmatic programmer", year: 1999, note: "on the desk" },
   { title: "atomic habits", note: "currently reading" },
   { title: "the four agreements", year: 1997, note: "next up" },
+  // open library stores this one's title as just "citizen", so pin the cover
+  {
+    title: "citizen: an american lyric",
+    year: 2014,
+    cover: "https://covers.openlibrary.org/b/id/7306622-L.jpg",
+  },
 ];
 
 // ── MOVIES (posters from TMDB — set TMDB_API_KEY to enable) ──────────────────
