@@ -118,6 +118,7 @@ export const books: ShelfItem[] = [
     year: 2014,
     cover: "https://covers.openlibrary.org/b/id/7306622-L.jpg",
   },
+  { title: "a thousand splendid suns", year: 2007, note: "crazy good" },
 ];
 
 // ── MOVIES (posters from TMDB — set TMDB_API_KEY to enable) ──────────────────
