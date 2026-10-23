@@ -36,7 +36,7 @@ export const settings = {
   // The heading shown above each section (kept lowercase to match the site).
   headings: {
     playlists: "playlists",
-    anime: "anime",
+    anime: "anime / manga",
     books: "books",
     movies: "movies",
   } as Record<SectionKey, string>,
