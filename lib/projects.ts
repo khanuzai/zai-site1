@@ -15,25 +15,31 @@ export type ProjectFrontmatter = {
   links: ProjectLink[];
   stats?: ProjectStat[]; // optional headline numbers shown under the title
   status?: string; // optional small muted label under the title (e.g. "in progress")
+  draft?: boolean;
 };
 
 export type ProjectMeta = ProjectFrontmatter & { slug: string };
 
-export function getProjectSlugs(): string[] {
+// Drafts are shown in development but hidden from listings and static
+// generation in production.
+const showDrafts = process.env.NODE_ENV !== "production";
+
+export function getAllProjects(): ProjectMeta[] {
   return fs
     .readdirSync(DIR)
     .filter((f) => f.endsWith(".mdx"))
-    .map((f) => f.replace(/\.mdx$/, ""));
-}
-
-export function getAllProjects(): ProjectMeta[] {
-  return getProjectSlugs()
-    .map((slug) => {
-      const raw = fs.readFileSync(path.join(DIR, `${slug}.mdx`), "utf8");
+    .map((f) => {
+      const slug = f.replace(/\.mdx$/, "");
+      const raw = fs.readFileSync(path.join(DIR, f), "utf8");
       const { data } = matter(raw);
       return { slug, ...(data as ProjectFrontmatter) };
     })
+    .filter((m) => showDrafts || !m.draft)
     .sort((a, b) => a.order - b.order);
+}
+
+export function getProjectSlugs(): string[] {
+  return getAllProjects().map((m) => m.slug);
 }
 
 export function getProject(
@@ -43,5 +49,7 @@ export function getProject(
   if (!fs.existsSync(file)) return null;
   const raw = fs.readFileSync(file, "utf8");
   const { data, content } = matter(raw);
-  return { meta: { slug, ...(data as ProjectFrontmatter) }, content };
+  const meta: ProjectMeta = { slug, ...(data as ProjectFrontmatter) };
+  if (!showDrafts && meta.draft) return null;
+  return { meta, content };
 }
