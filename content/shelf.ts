@@ -105,6 +105,7 @@ export const anime: ShelfItem[] = [
   { title: "chainsaw man"},
   { title: "attack on titan"},
   { title: "jojo's bizarre adventure", year: 2012 },
+  { title: "hellsing ultimate"}
 ];
 
 // ── BOOKS (covers from Open Library) ─────────────────────────────────────────
