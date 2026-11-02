@@ -122,6 +122,7 @@ export const books: ShelfItem[] = [
   },
   { title: "a thousand splendid suns", year: 2007, note: "crazy good" },
   { title: "the atlas of the heart", year: 2021 },
+  { title: "the hobbit", year: 1937 },
 ];
 
 // ── MOVIES (posters from TMDB — set TMDB_API_KEY to enable) ──────────────────
